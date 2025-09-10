@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Betting Predictions</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root{--bg:#f9fafb;--text:#111;--card:#fff;--border:#ddd;--muted:#666;--primary:#2563eb}[data-theme="dark"]{--bg:#111827;--text:#f9fafb;--card:#1f2937;--border:#374151;--muted:#9ca3af;--primary:#3b82f6}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}.drawer{position:fixed;left:-260px;top:0;bottom:0;width:260px;background:var(--card);border-right:1px solid var(--border);padding:20px;transition:left 0.3s ease;z-index:1001}.drawer.open{left:0}.drawer h2{margin-bottom:20px;font-size:18px}.drawer a{display:block;padding:10px;margin-bottom:6px;border-radius:6px;color:var(--text);text-decoration:none;transition:background 0.2s}.drawer a:hover{background:var(--primary);color:#fff}.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgb(0 0 0 / .4);display:none;z-index:1000}.overlay.show{display:block}header{position:fixed;top:0;left:0;right:0;height:60px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:999}.menu-btn,.theme-toggle{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text)}main{margin-top:60px;flex:1;padding:20px}.predictions{display:grid;gap:16px}.card{background:var(--card);padding:16px;border:1px solid var(--border);border-radius:12px;box-shadow:0 4px 10px rgb(0 0 0 / .04);transition:transform .2s,box-shadow .2s}.card:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgb(0 0 0 / .08)}.match{display:flex;align-items:center;gap:10px;margin-bottom:12px}.team{flex:1;text-align:center}.team img{width:40px;height:40px;object-fit:contain;display:block;margin:0 auto 6px}.vs{font-weight:700;font-size:14px;color:var(--muted)}.league-info{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:6px}.league-info img{width:18px;height:18px}.datetime{font-size:13px;color:var(--muted);margin-bottom:10px}.prediction-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.pick{background:#ecfdf5;color:var(--primary);padding:6px 10px;border-radius:6px;font-size:14px;font-weight:600}.status{font-size:14px;font-weight:700}.won{color:limegreen}.lost{color:#ef4444}.pending{color:orange}.floating-social{position:fixed;bottom:20px;right:20px;width:55px;height:55px;border-radius:50%;background:var(--primary);display:flex;justify-content:center;align-items:center;color:#fff;font-size:26px;cursor:pointer;z-index:1002;transition:background 0.3s,transform 0.3s}.floating-social:hover{transform:scale(1.1)}
+</style>
+
+</head>
+<body data-theme="light">
+  <div class="drawer" id="drawer">
+    <h2>Sections</h2>
+    <a href="#" data-api="Over_Under">Total goals</a>
+    <a href="#" data-api="DNB">Draw No Bet</a>
+    <a href="#" data-api="Corner">Corner Predictions</a>
+    <a href="#" data-api="Double Chance">Double chance</a>
+    <a href="#" data-api="Handicap">Handicap Tips</a>
+  </div>
+  <div class="overlay" id="overlay"></div>
+
+  <header>
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <h1>Mystery bet</h1>
+    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+  </header>
+
+  <main>
+    <div class="predictions" id="predictions"></div>
+  </main>
+
+  <div id="socialBtn" class="floating-social">
+    <i class="fab fa-whatsapp"></i>
+  </div>
+
+  <script>
+const drawer=document.getElementById("drawer");const overlay=document.getElementById("overlay");const menuBtn=document.getElementById("menuBtn");const themeToggle=document.getElementById("themeToggle");const container=document.getElementById("predictions");const socialBtn=document.getElementById("socialBtn");menuBtn.addEventListener("click",()=>{drawer.classList.add("open");overlay.classList.add("show")});overlay.addEventListener("click",()=>{drawer.classList.remove("open");overlay.classList.remove("show")});themeToggle.addEventListener("click",()=>{const body=document.body;const theme=body.getAttribute("data-theme")==="light"?"dark":"light";body.setAttribute("data-theme",theme);themeToggle.innerHTML=theme==="light"?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>'});async function loadPredictions(api="Over_Under"){container.innerHTML="Loading...";try{const res=await fetch(``);let data=await res.json();data.sort((a,b)=>b.id-a.id);container.innerHTML="";data.forEach(p=>{let statusClass="pending";let statusText="⏳ Pending";if(p.status==="won"){statusClass="won";statusText="✅ Won"}
+if(p.status==="lost"){statusClass="lost";statusText="❌ Lost"}
+const card=document.createElement("div");card.className="card";card.innerHTML=`
+        <div class="datetime">${p.date || ""} ${p.time || ""}</div>
+        <div class="league-info">
+          <img src="${p.league_logo}" alt="${p.league}">
+          <span>${p.league}</span>
+        </div>
+        <div class="match">
+          <div class="team">
+            <img src="${p.home_logo}" alt="${p.home}">
+            <div>${p.home}</div>
+          </div>
+          <div class="vs">vs</div>
+          <div class="team">
+            <img src="${p.away_logo}" alt="${p.away}">
+            <div>${p.away}</div>
+          </div>
+        </div>
+        <div class="prediction-footer">
+          <div class="pick">${p.prediction}</div>
+          <div class="meta">Odds ${p.odd || "-"}</div>
+          <div class="status ${statusClass}">${statusText}</div>
+        </div>
+      `;container.appendChild(card)})}catch(err){container.innerHTML="Failed to load predictions."}}
+document.querySelectorAll(".drawer a").forEach(a=>{a.addEventListener("click",e=>{e.preventDefault();const api=a.getAttribute("data-api");loadPredictions(api);drawer.classList.remove("open");overlay.classList.remove("show")})});const socials=[{icon:"fa-whatsapp",color:"#25D366",url:"https://whatsapp.com/channel/0029Vb6XFIyK5cDJAbOGgE1W"},{icon:"fa-facebook",color:"#1877F2",url:"https://www.facebook.com/andy.ac.146069"},{icon:"fa-telegram",color:"#0088cc",url:"https://t.me/mysterybet11"}];let index=0;function updateSocial(){const s=socials[index];socialBtn.innerHTML=`<i class="fab ${s.icon}"></i>`;socialBtn.style.background=s.color;socialBtn.onclick=()=>window.open(s.url,"_blank");index=(index+1)%socials.length}
+setInterval(updateSocial,4000);updateSocial();loadPredictions()
+
+</script>
+</body>
+</html>
