@@ -1,0 +1,17 @@
+[
+  {
+    "id": 102,
+    "date": "2025-09-12",
+    "time": "14:00",
+    "league": "Premier League",
+    "league_logo": "url_to_premier_league_logo.png",
+    "home": "Man City",
+    "home_logo": "url_to_mancity_logo.png",
+    "away": "Liverpool",
+    "away_logo": "url_to_liverpool_logo.png",
+    "prediction": "Over 2.5 Goals",
+    "odd": 1.75,
+    "status": "pending",
+    "score": ""
+  }
+]
